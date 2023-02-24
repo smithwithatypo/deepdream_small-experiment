@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import stephens_helper_functions as hf
+import helper_functions as hf
 
 
 import IPython.display as display
@@ -57,7 +57,6 @@ directories.sort()
 # print(type(directories))
 # print(directories)
 
-# TODO: now augment an image!
 for folder in directories:
     for file in files:
         original_img = hf.read_image_from_local_storage(

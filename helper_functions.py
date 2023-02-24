@@ -43,18 +43,20 @@ def read_image_from_local_storage(image, folder, route="train", small_data=False
 
     if (route == "train" or
             route == "test" or
-            route == "val"):
+            route == "val" or
+            route == None):
         pass
     else:
         print("Please input route=\"train\" or \"test\" or \"val\" ")
 
     if small_data:
         test_image_path = tf.keras.utils.get_file(
-            image, f"file:///home/wpx1/deepdream/small_data/tiny-imagenet-200/{route}/{folder}/images/{image}")
+            image, f"file:///home/wpx1/deepdream_small/data/small_data_original/{folder}/images/{image}")
     else:
-        test_image_path = tf.keras.utils.get_file(
-            image, f"file:///home/wpx1/deepdream/data/tiny-imagenet-200/{route}/{folder}/images/{image}")
+        # test_image_path = tf.keras.utils.get_file(
+        #     image, f"file:///home/wpx1/deepdream/data/tiny-imagenet-200/{route}/{folder}/images/{image}")
         # print(f"Look here for the file: {test_image_path}")  # for debugging
+        pass
 
     img = PIL.Image.open(test_image_path)
     final_img = np.array(img)
@@ -62,13 +64,21 @@ def read_image_from_local_storage(image, folder, route="train", small_data=False
     return final_img
 
 
-def export_image_to_local_storage(image, number, folder):
-    ''' export an image to ./augmented_small_data/ '''  # TODO: abstract this
+def export_image_to_local_storage(image, folder, file):
+    ''' export an image to .data/small_data_augmented/ '''  # TODO: abstract this
 
-    new_file = make_filename(folder, number, extension="JPEG")
-    tf.keras.utils.save_img(f"./augmented_small_data/{new_file}", image)
+    # mkdir if it doesn't exist
+    if not os.path.exists(f"./data/small_data_augmented/{folder}/images/"):
+        os.makedirs(
+            f"./data/small_data_augmented/{folder}/images/")
+    else:
+        pass
 
-    print(f"Saved to ./augmented_small_data/{new_file}")
+    tf.keras.utils.save_img(
+        f"./data/small_data_augmented/{folder}/images/{file}", image)
+
+    print(
+        f"Saved to ./data/small_data_augmented/{folder}/images/{file}")
 
 
 def find_all_combinations(start=0, end=0):
