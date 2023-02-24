@@ -3,7 +3,7 @@ import tensorflow as tf
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import stephens_helper_functions as hf
+import helper_functions as hf
 
 
 import IPython.display as display
