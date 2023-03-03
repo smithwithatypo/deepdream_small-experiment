@@ -13,6 +13,52 @@ import itertools
 import random
 
 
+def import_file(experiment, route, folder, metadata, file):
+    ''' UNDER CONSTRUCTION '''
+
+    image_path = tf.keras.utils.get_file(
+        file, f"file:///home/wpx1/{experiment}/{route}/{folder}/{metadata}/{file}")
+    print(
+        f"On this image: file:///home/wpx1/{experiment}/{route}/{folder}/{metadata}/{file}")
+
+    img = PIL.Image.open(image_path)
+    final_img = np.array(img)
+
+    return final_img
+
+
+def export_file(image, experiment, route, folder, metadata, file, file_suffix=None):
+    ''' UNDER CONSTRUCTION '''
+
+    if file_suffix:
+        filename = file.split("."[0])
+        filetype = file.split("."[1])
+        file = f"{filename}_{file_suffix}.{filetype}"
+
+    image_path = tf.keras.utils.get_file(
+        file, f"file:///home/wpx1/{experiment}/{route}/{folder}/{metadata}/{file}")
+    print(
+        f"On this image: file:///home/wpx1/{experiment}/{route}/{folder}/{metadata}/{file}")
+
+    # export code is below this
+    if not os.path.exists(f"./data/small_data_augmented/{folder}/images/"):
+        os.makedirs(
+            f"./data/small_data_augmented/{folder}/images/")
+    else:
+        pass
+
+    # if the file already exists, pass
+    if os.path.exists(f"./{route}/{folder}/{metadata}/{file}"):
+        print(
+            f"File already exists: ./{route}/{folder}/{metadata}/{file}")
+    else:
+        tf.keras.utils.save_img(
+            f"./{route}/{folder}/{metadata}/{file}", image)
+
+        print(
+            f"Saved to ./{route}/{folder}/{metadata}/{file}")
+
+
 def make_list_of_directories_from_filepath(filepath):
     ''' make a list of directories from a filepath'''
 
