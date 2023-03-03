@@ -49,8 +49,6 @@ def deprocess(img):
     img = 255*(img + 1.0)/2.0
     return tf.cast(img, tf.uint8)
 
-# Display an image
-
 
 def show(img):
     display.display(PIL.Image.fromarray(np.array(img)))
@@ -170,8 +168,9 @@ for folder in directories:
 
     # break  # comment out to run on all folders
 
-print(
-    f"Number of black and white images: {len(black_white_images)}")
+print(f"There are {len(black_white_images)} black and white images:")
+print(black_white_images)
+
 end_time = time.time()
 total_time = end_time - start_time
 
