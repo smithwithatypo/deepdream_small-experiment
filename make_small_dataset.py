@@ -2,6 +2,7 @@ from pathlib import Path
 import shutil
 import os
 
+# TODO:  handle black and white images. Keep shape (64,64,3) - Keras is auto-converting to (64, 64)
 class_name = "n02769748"
 source = f"/home/wpx1/deepdream/data/tiny-imagenet-200/train/{class_name}/images/"
 target = f"/home/wpx1/deepdream/small_data/tiny-imagenet-200/train/{class_name}/images/"
