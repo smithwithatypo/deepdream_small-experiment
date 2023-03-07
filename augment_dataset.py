@@ -33,14 +33,13 @@ if gpus:
         print(e)
 
 
-filepath = f"./data/small_data_original/"
-directories = hf.make_list_of_directories_from_filepath(filepath)
-
 base_model = tf.keras.applications.InceptionV3(
     include_top=False, weights='imagenet')
 
-names = ['mixed3', 'mixed5']
-layers = [base_model.get_layer(name).output for name in names]
+random_choices = hf.pick_random_choices(seed=0)
+activated_layers = hf.add_prefix(random_choices)
+layers = [base_model.get_layer(name).output for name in activated_layers]
+print(f"layers: {activated_layers}")
 
 dream_model = tf.keras.Model(inputs=base_model.input, outputs=layers)
 
@@ -138,16 +137,40 @@ def run_deep_dream_simple(img, steps=100, step_size=0.01):
 
 black_white_images = set()
 
+route_dict = {"train": "data/tiny-imagenet-200/train",
+              "val": "data/tiny-imagenet-200/val",
+              "test": "data/tiny-imagenet-200/test",
+              "words": "data/tiny-imagenet-200/words.txt",
+              "augmented": "data/augmented",
+              "small_orig": "data/small_data_original",
+              "small_aug": "data/small_data_augmented"}
+experiment = "deepdream_small"    # "deepdream" or "deepdream_small"
+metadata = "images"    # "images" or "metadata"
+batch_number = None    # to track activated layers per batch
+
+filepath = f"./data/small_data_original/"
+directories = hf.make_list_of_directories_from_filepath(filepath)
+
 for folder in directories:
-    filepath = f"./data/small_data_original/{folder}/images/"
-    files = hf.make_list_of_files_from_filepath(filepath)
+    nested_filepath = f"./{route_dict['small_orig']}/{folder}/{metadata}/"
+    files = hf.make_list_of_files_from_filepath(nested_filepath)
     for file in files:
-        if os.path.exists(f"./data/small_data_augmented/{folder}/images/{file}"):
+        if os.path.exists(f"./{route_dict['small_aug']}/{folder}/images/{file}"):
             print("Already augmented")
             continue
 
-        original_img = hf.read_image_from_local_storage(
-            file, folder=folder, route=None, small_data=True)
+        # original_img = hf.read_image_from_local_storage(
+        #     file, folder=folder, route=None, small_data=True)
+        # print(f"Original Image:", type(original_img), original_img.shape)
+
+        route = route_dict["small_orig"]
+        original_img = hf.import_file(
+            experiment=experiment,
+            route=route,
+            folder=folder,
+            metadata=metadata,
+            file=file
+        )
         print(f"Original Image:", type(original_img), original_img.shape)
 
         if original_img.shape == (64, 64):
@@ -158,15 +181,23 @@ for folder in directories:
         dream_img = run_deep_dream_simple(img=original_img,
                                           steps=40, step_size=0.01)
 
-        print(f"Dream Image:", type(dream_img), dream_img.shape)
         hf.show(dream_img)
         # break  # debugging before export
 
-        hf.export_image_to_local_storage(
-            dream_img, folder=folder, file=file)
+        route = route_dict["small_aug"]
+        batch_number = batch_number
+        hf.export_file(
+            dream_img,
+            experiment=experiment,
+            route=route,
+            folder=folder,
+            metadata=metadata,
+            file=file,
+            file_suffix=batch_number,
+        )
         # break  # comment out to run on all files
 
-    # break  # comment out to run on all folders
+    break  # comment out to run on all folders
 
 print(f"There are {len(black_white_images)} black and white images:")
 print(black_white_images)

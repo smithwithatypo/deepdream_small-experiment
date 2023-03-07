@@ -58,6 +58,8 @@ def export_file(image, experiment, route, folder, metadata, file, file_suffix=No
         print(
             f"Saved to ./{route}/{folder}/{metadata}/{file}")
 
+    # TODO: handle metadata
+
 
 def make_list_of_directories_from_filepath(filepath):
     ''' make a list of directories from a filepath'''
@@ -84,91 +86,53 @@ def make_filename(class_name, id=0, extension="JPEG"):
     return result
 
 
-def read_image_from_local_storage(image, folder, route="train", small_data=False):
-    ''' read an image from file:///home/wpx1/deepdream/data/tiny-imagenet-200/ '''
+# def find_all_combinations(start=0, end=0):
+#     ''' generate a list of all possible combinations
+#         between start and end (inclusive) '''
 
-    if (route == "train" or
-            route == "test" or
-            route == "val" or
-            route == None):
-        pass
-    else:
-        print("Please input route=\"train\" or \"test\" or \"val\" ")
+#     array = range(start, end + 1)
+#     result = []
 
-    if small_data:
-        test_image_path = tf.keras.utils.get_file(
-            image, f"file:///home/wpx1/deepdream_small/data/small_data_original/{folder}/images/{image}")
-    else:
-        # test_image_path = tf.keras.utils.get_file(
-        #     image, f"file:///home/wpx1/deepdream/data/tiny-imagenet-200/{route}/{folder}/images/{image}")
-        # print(f"Look here for the file: {test_image_path}")  # for debugging
-        pass
-
-    print(
-        f"On this image: file:///home/wpx1/deepdream_small/data/small_data_original/{folder}/images/{image}")
-    img = PIL.Image.open(test_image_path)
-    final_img = np.array(img)
-
-    return final_img
+#     for i in range(start, end + 1):
+#         for subset in itertools.combinations(array, i):
+#             result.append(subset)
+#     return result
 
 
-def export_image_to_local_storage(image, folder, file):
-    ''' export an image to .data/small_data_augmented/ '''  # TODO: abstract this
+# def pick_random_choices(arr, quantity, seed=None):
+#     ''' pick a quantity of random items in an array.
+#         (optional random seed) '''
 
-    # mkdir if it doesn't exist
-    if not os.path.exists(f"./data/small_data_augmented/{folder}/images/"):
-        os.makedirs(
-            f"./data/small_data_augmented/{folder}/images/")
-    else:
-        pass
+#     if seed:
+#         random.seed(seed)
 
-    # if the file already exists, pass
-    if os.path.exists(f"./data/small_data_augmented/{folder}/images/{file}"):
-        print(
-            f"File already exists: ./data/small_data_augmented/{folder}/images/{file}")
-    else:
-        tf.keras.utils.save_img(
-            f"./data/small_data_augmented/{folder}/images/{file}", image)
+#     return random.choices(arr, k=quantity)
 
-        print(
-            f"Saved to ./data/small_data_augmented/{folder}/images/{file}")
-
-
-def find_all_combinations(start=0, end=0):
-    ''' generate a list of all possible combinations 
-        between start and end (inclusive) '''
-
+def pick_random_choices(start=0, end=10, quantity=4, seed=None):
     array = range(start, end + 1)
     result = []
 
     for i in range(start, end + 1):
         for subset in itertools.combinations(array, i):
-            result.append(subset)
-    return result
-
-
-def pick_random_choices(arr, quantity, seed=None):
-    ''' pick a quantity of random items in an array.
-        (optional random seed) '''
+            result.append(subset) if len(subset) <= quantity else None
 
     if seed:
         random.seed(seed)
 
-    return random.choices(arr, k=quantity)
+    return random.choices(result, k=1)
 
 
-def add_prefix(input_tuple):
+def add_prefix(input):
     ''' converts tuples to lists, then prefixes each index with "mixed",
         then converts each item to a string '''
-    array = list()
+    result = []
 
-    for item in input_tuple:
-        array.append(list(item))
-
-    for sub_array in array:
-        for index, item in enumerate(sub_array):
-            sub_array[index] = "mixed" + str(item)
-    return array
+    for item in input:
+        item = list(item)
+        item = [f"mixed{i}" for i in item]
+        item = [str(i) for i in item]
+        result.append(item)
+    return result[0]
 
 
 def deprocess(img):
@@ -204,3 +168,53 @@ def create_layer_activated_model(base_model, layers):
 
 
 ### Archive / Trash
+
+
+# def read_image_from_local_storage(image, folder, route="train", small_data=False):
+#     ''' read an image from file:///home/wpx1/deepdream/data/tiny-imagenet-200/ '''
+
+#     if (route == "train" or
+#             route == "test" or
+#             route == "val" or
+#             route == None):
+#         pass
+#     else:
+#         print("Please input route=\"train\" or \"test\" or \"val\" ")
+
+#     if small_data:
+#         test_image_path = tf.keras.utils.get_file(
+#             image, f"file:///home/wpx1/deepdream_small/data/small_data_original/{folder}/images/{image}")
+#     else:
+#         # test_image_path = tf.keras.utils.get_file(
+#         #     image, f"file:///home/wpx1/deepdream/data/tiny-imagenet-200/{route}/{folder}/images/{image}")
+#         # print(f"Look here for the file: {test_image_path}")  # for debugging
+#         pass
+
+#     print(
+#         f"On this image: file:///home/wpx1/deepdream_small/data/small_data_original/{folder}/images/{image}")
+#     img = PIL.Image.open(test_image_path)
+#     final_img = np.array(img)
+
+#     return final_img
+
+
+# def export_image_to_local_storage(image, folder, file):
+#     ''' export an image to .data/small_data_augmented/ '''
+
+#     # mkdir if it doesn't exist
+#     if not os.path.exists(f"./data/small_data_augmented/{folder}/images/"):
+#         os.makedirs(
+#             f"./data/small_data_augmented/{folder}/images/")
+#     else:
+#         pass
+
+#     # if the file already exists, pass
+#     if os.path.exists(f"./data/small_data_augmented/{folder}/images/{file}"):
+#         print(
+#             f"File already exists: ./data/small_data_augmented/{folder}/images/{file}")
+#     else:
+#         tf.keras.utils.save_img(
+#             f"./data/small_data_augmented/{folder}/images/{file}", image)
+
+#         print(
+#             f"Saved to ./data/small_data_augmented/{folder}/images/{file}")
