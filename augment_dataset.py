@@ -25,9 +25,9 @@ gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
     try:
         # Restrict TensorFlow to only use the fifth GPU
-        tf.config.experimental.set_visible_devices(gpus[4], 'GPU')
+        tf.config.experimental.set_visible_devices(gpus[0], 'GPU')
         # Allow TensorFlow to allocate only as much GPU memory as needed
-        tf.config.experimental.set_memory_growth(gpus[4], True)
+        tf.config.experimental.set_memory_growth(gpus[0], True)
     except RuntimeError as e:
         # Visible devices must be set before GPUs have been initialized
         print(e)
@@ -148,7 +148,7 @@ experiment = "deepdream_small"    # "deepdream" or "deepdream_small"
 metadata = "images"    # "images" or "metadata"
 batch_number = None    # to track activated layers per batch
 
-filepath = f"./data/small_data_original/"
+filepath = f"./data/small_data_original"
 directories = hf.make_list_of_directories_from_filepath(filepath)
 
 for folder in directories:
